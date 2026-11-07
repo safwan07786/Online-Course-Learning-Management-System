@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Learning Dashboard - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <!-- Dashboard Banner -->
+    <div class="dashboard-header">
+        <div class="container dashboard-header-inner">
+            <div>
+                <span class="badge badge-primary" style="margin-bottom: 0.75rem;">Student Learning Portal</span>
+                <h1 id="welcomeGreeting">Welcome back, Safwaan!</h1>
+                <p>Track your enrolled courses, lesson milestones, and completion status.</p>
+            </div>
+            <div>
+                <a href="courses.html" class="btn btn-primary btn-lg">Browse More Courses &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" style="margin-bottom: 4rem;">
+
+        <!-- Metric Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">📚</div>
+                <div>
+                    <div class="stat-number" id="metricEnrolled">0</div>
+                    <div class="stat-label">Enrolled Courses</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">🏆</div>
+                <div>
+                    <div class="stat-number" id="metricCompleted">0</div>
+                    <div class="stat-label">Completed Courses</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">⏳</div>
+                <div>
+                    <div class="stat-number" id="metricInProgress">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon secondary">⭐</div>
+                <div>
+                    <div class="stat-number" id="metricAvgProgress">0%</div>
+                    <div class="stat-label">Average Completion</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrolled Courses Section -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.6rem;">My Enrolled Courses</h2>
+            <span id="enrollmentCountText" style="color: var(--gray-500); font-size: 0.9rem;">Showing 0 courses</span>
+        </div>
+
+        <div class="courses-grid" id="enrolledCoursesGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--gray-500);">
+                Loading your learning path...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        async function loadStudentDashboard() {
+            if (!requireAuth()) return;
+
+            const currentUser = Auth.getUser();
+            if (currentUser) {
+                document.getElementById('welcomeGreeting').textContent = `Welcome back, ${currentUser.name}!`;
+            }
+
+            const res = await apiFetch('/api/enrollments/my');
+            const grid = document.getElementById('enrolledCoursesGrid');
+
+            if (!res.success || !res.enrollments || res.enrollments.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: var(--white); border-radius: var(--radius-xl); border: 1px dashed var(--gray-300);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+                        <h3>You haven't enrolled in any courses yet</h3>
+                        <p style="color: var(--gray-500); margin: 0.75rem auto 1.5rem; max-width: 450px;">
+                            Start learning today by exploring our catalog of courses in Web Development, Python, and System Design.
+                        </p>
+                        <a href="courses.html" class="btn btn-primary">Discover Courses Now</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const enrollments = res.enrollments;
+            document.getElementById('enrollmentCountText').textContent = `Showing ${enrollments.length} enrolled course${enrollments.length > 1 ? 's' : ''}`;
+
+            // Compute statistics
+            let completedCount = 0;
+            let inProgressCount = 0;
+            let totalProgressSum = 0;
+
+            enrollments.forEach(e => {
+                totalProgressSum += e.progress;
+                if (e.progress >= 100 || e.status === 'Completed') {
+                    completedCount++;
+                } else {
+                    inProgressCount++;
+                }
+            });
+
+            const avgProgress = Math.round(totalProgressSum / enrollments.length);
+
+            document.getElementById('metricEnrolled').textContent = enrollments.length;
+            document.getElementById('metricCompleted').textContent = completedCount;
+            document.getElementById('metricInProgress').textContent = inProgressCount;
+            document.getElementById('metricAvgProgress').textContent = `${avgProgress}%`;
+
+            // Render cards
+            grid.innerHTML = enrollments.map(item => `
+                <div class="course-card">
+                    <div class="course-thumb-wrap">
+                        <img src="${item.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'}" alt="${item.course_title}" class="course-thumb">
+                        <span class="course-category-badge">${item.category || 'General'}</span>
+                        <span class="course-duration-badge">⏱️ ${item.duration} Hours</span>
+                    </div>
+                    <div class="course-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span class="badge ${item.progress >= 100 ? 'badge-success' : 'badge-primary'}">
+                                ${item.progress >= 100 ? '✓ Completed' : 'In Progress'}
+                            </span>
+                            <span style="font-size: 0.75rem; color: var(--gray-500);">Enrolled: ${item.enrollment_date}</span>
+                        </div>
+
+                        <h3 class="course-title">${item.course_title}</h3>
+                        <div class="course-instructor" style="margin-bottom: 1rem;">
+                            <span>👨‍🏫 Instructor:</span> <strong>${item.instructor_name}</strong>
+                        </div>
+
+                        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--gray-100);">
+                            <div class="progress-meta">
+                                <span>Overall Progress</span>
+                                <span style="color: var(--primary); font-weight: 800;">${item.progress}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar-fill" style="width: ${item.progress}%;"></div>
+                            </div>
+                            <a href="course-player.html?courseId=${item.course_id}" class="btn ${item.progress >= 100 ? 'btn-secondary' : 'btn-primary'}" style="width: 100%; margin-top: 0.75rem;">
+                                ${item.progress >= 100 ? 'Review Course Material' : '▶ Continue Learning'}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadStudentDashboard);
+    </script>
+</body>
+</html>

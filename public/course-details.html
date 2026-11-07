@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <div id="courseHeader" style="background: linear-gradient(135deg, var(--dark), var(--dark-surface)); color: var(--white); padding: 4rem 0 3rem;">
+        <div class="container">
+            <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.9rem; color: var(--gray-400); margin-bottom: 1.25rem;">
+                <a href="courses.html" style="color: var(--gray-400);">Courses</a> &rsaquo; <span id="breadcrumbCategory" style="color: var(--primary-light);">Category</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 360px; gap: 3.5rem; align-items: start;">
+                <div>
+                    <h1 id="courseTitle" style="color: var(--white); font-size: 2.75rem; margin-bottom: 1rem; line-height: 1.2;">
+                        Loading Course Details...
+                    </h1>
+                    <p id="courseDesc" style="color: var(--gray-300); font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.6;">
+                        Please wait while course details are being retrieved.
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">👨‍🏫</span>
+                            <span style="color: var(--gray-300);">Instructor: <strong id="courseInstructor" style="color: var(--white);">Safwaan</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">⏱️</span>
+                            <span style="color: var(--gray-300);">Duration: <strong id="courseDuration" style="color: var(--white);">0 Hours</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">📖</span>
+                            <span style="color: var(--gray-300);">Lessons: <strong id="courseLessonCount" style="color: var(--white);">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sticky Enrollment Action Card -->
+                <div style="background: var(--white); color: var(--gray-800); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); border: 1px solid var(--gray-200);">
+                    <img id="courseThumbnail" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" style="width: 100%; height: 180px; object-fit: cover;">
+                    <div style="padding: 1.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.25rem;">
+                            <span id="coursePrice" style="font-size: 2rem; font-weight: 800; color: var(--primary); font-family: 'Space Grotesk', sans-serif;">$0.00</span>
+                            <span style="background: var(--success-bg); color: var(--success); font-size: 0.8rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: var(--radius-full);">Full Lifetime Access</span>
+                        </div>
+                        <div id="enrollmentActionArea">
+                            <button id="enrollBtn" class="btn btn-primary btn-lg" style="width: 100%; margin-bottom: 0.75rem;">Enroll Now</button>
+                        </div>
+                        <ul style="list-style: none; font-size: 0.85rem; color: var(--gray-600); margin-top: 1rem; border-top: 1px solid var(--gray-100); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li>✓ Access on mobile and desktop</li>
+                            <li>✓ Real-time progress tracking</li>
+                            <li>✓ Official Certificate of Completion</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Curriculum / Lessons Section -->
+    <main class="container" style="padding: 3.5rem 1.5rem 5rem;">
+        <div style="display: grid; grid-template-columns: 1fr 360px; gap: 3.5rem;">
+            <div>
+                <h2 style="font-size: 1.85rem; margin-bottom: 1rem;">Course Curriculum & Lessons</h2>
+                <p style="color: var(--gray-500); margin-bottom: 2rem;">
+                    Step-by-step video lessons and learning material organized sequentially.
+                </p>
+
+                <div id="lessonsListContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div>
+                <!-- Instructor Card -->
+                <div style="background: var(--white); border-radius: var(--radius-lg); padding: 1.75rem; border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Meet the Instructor</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.35rem;">
+                            S
+                        </div>
+                        <div>
+                            <h4 id="instructorCardName" style="font-size: 1.1rem;">Safwaan</h4>
+                            <p style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">Senior System Architect</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--gray-600); line-height: 1.5;">
+                        Dedicated software engineer and educator leading modern courses in full-stack web architectures, databases, and responsive design systems.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id');
+
+        async function loadCourseDetails() {
+            if (!courseId) {
+                window.location.href = 'courses.html';
+                return;
+            }
+
+            const res = await apiFetch(`/api/courses/${courseId}`);
+            if (!res.success || !res.course) {
+                showToast('Course not found.', 'error');
+                setTimeout(() => window.location.href = 'courses.html', 1500);
+                return;
+            }
+
+            const course = res.course;
+            const lessons = res.lessons || [];
+            const userEnrollment = res.userEnrollment;
+
+            document.title = `${course.title} - Antigravity LMS`;
+            document.getElementById('breadcrumbCategory').textContent = course.category || 'General';
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseDesc').textContent = course.description;
+            document.getElementById('courseInstructor').textContent = course.instructor_name;
+            document.getElementById('instructorCardName').textContent = course.instructor_name;
+            document.getElementById('courseDuration').textContent = `${course.duration} Hours`;
+            document.getElementById('courseLessonCount').textContent = lessons.length;
+            document.getElementById('courseThumbnail').src = course.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+
+            const priceEl = document.getElementById('coursePrice');
+            if (parseFloat(course.price) === 0) {
+                priceEl.textContent = 'Free';
+                priceEl.style.color = 'var(--success)';
+            } else {
+                priceEl.textContent = `$${parseFloat(course.price).toFixed(2)}`;
+            }
+
+            // Render action button
+            const actionArea = document.getElementById('enrollmentActionArea');
+            if (userEnrollment) {
+                actionArea.innerHTML = `
+                    <div style="margin-bottom: 0.75rem;">
+                        <div class="progress-meta" style="margin-bottom: 4px;">
+                            <span>Current Progress</span>
+                            <span style="color:var(--primary); font-weight:800;">${userEnrollment.progress}%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar-fill" style="width: ${userEnrollment.progress}%;"></div>
+                        </div>
+                    </div>
+                    <a href="course-player.html?courseId=${course.course_id}" class="btn btn-accent btn-lg" style="width: 100%;">
+                        ▶ Resume Learning
+                    </a>
+                `;
+            } else {
+                actionArea.innerHTML = `
+                    <button id="enrollBtn" class="btn btn-primary btn-lg" style="width: 100%;" onclick="enrollInCourse(${course.course_id})">
+                        Enroll in Course Now
+                    </button>
+                `;
+            }
+
+            // Render syllabus
+            const lessonsContainer = document.getElementById('lessonsListContainer');
+            if (lessons.length === 0) {
+                lessonsContainer.innerHTML = '<p style="color: var(--gray-500); padding: 1.5rem; background: var(--white); border-radius: var(--radius-md);">No lessons uploaded yet for this course.</p>';
+            } else {
+                lessonsContainer.innerHTML = lessons.map((l, index) => `
+                    <div style="background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--gray-600); font-size: 0.85rem;">
+                                ${l.sequence_no || (index + 1)}
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1rem; margin-bottom: 0.2rem;">${l.lesson_title}</h4>
+                                <span style="font-size: 0.8rem; color: var(--gray-500);">🎥 Video Lecture & Learning Notes</span>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.8rem; background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.6rem; border-radius: var(--radius-full); font-weight: 600;">
+                            ${userEnrollment ? 'Unlocked' : 'Included'}
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function enrollInCourse(cId) {
+            if (!Auth.isLoggedIn()) {
+                showToast('Please log in or register to enroll.', 'info');
+                setTimeout(() => window.location.href = 'login.html', 1200);
+                return;
+            }
+
+            const res = await apiFetch('/api/enrollments', {
+                method: 'POST',
+                body: { course_id: cId }
+            });
+
+            if (res.success) {
+                showToast(res.message, 'success');
+                setTimeout(() => {
+                    window.location.href = `course-player.html?courseId=${cId}`;
+                }, 1000);
+            } else {
+                showToast(res.message || 'Enrollment failed.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCourseDetails);
+    </script>
+</body>
+</html>

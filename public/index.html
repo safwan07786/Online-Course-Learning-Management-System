@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity LMS - Online Course Learning Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2226%22 font-size=%2224%22>⚡</text></svg>">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div>
+                <div class="hero-badge">
+                    <span>✨</span> Engineered for Safwaan &bull; Antigravity Platform
+                </div>
+                <h1 class="hero-title">
+                    Master In-Demand Skills with <span class="highlight">Antigravity LMS</span>
+                </h1>
+                <p class="hero-subtitle">
+                    A modern, full-stack Learning Management System where instructors publish interactive courses, upload video materials, and students track their progress seamlessly.
+                </p>
+                <div class="hero-cta">
+                    <a href="courses.html" class="btn btn-primary btn-lg">Explore All Courses &rarr;</a>
+                    <a href="register.html" class="btn btn-secondary btn-lg">Join as Instructor or Student</a>
+                </div>
+                <div class="hero-stats-row">
+                    <div class="stat-item">
+                        <h4 id="statCourses">4+</h4>
+                        <p>Active Courses</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4 id="statStudents">120+</h4>
+                        <p>Happy Students</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4 id="statLessons">25+</h4>
+                        <p>Video Lessons</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4 id="statEnrollments">98%</h4>
+                        <p>Completion Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80" alt="Learning Platform">
+                    <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Interactive Learning Console</h3>
+                    <p style="font-size: 0.9rem; color: var(--gray-500); margin-bottom: 1rem;">
+                        Watch structured video lessons, review study content, and get real-time progress calculations in MySQL.
+                    </p>
+                    <div class="progress-meta">
+                        <span>Course Completion</span>
+                        <span style="color:var(--primary); font-weight:800;">75%</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+                <div class="floating-pill">
+                    <div class="floating-pill-icon">🎓</div>
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--gray-500); font-weight: 700;">FEATURED INSTRUCTOR</div>
+                        <div style="font-size: 0.95rem; font-weight: 800; color: var(--gray-900);">Safwaan &bull; Senior Architect</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Highlights / Architecture -->
+    <section style="padding: 4.5rem 0; background: var(--white); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200);">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">Core LMS Capabilities</div>
+                <h2 class="section-title">Designed for Modern Learning & Teaching</h2>
+                <p class="section-desc">Experience a synchronized ecosystem powered by Express.js and MySQL.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <!-- Feature 1 -->
+                <div style="padding: 2rem; background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-200);">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+                        👨‍🏫
+                    </div>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Instructor Course Studio</h3>
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">
+                        Instructors like <strong>Safwaan</strong> can easily create new courses, set pricing, define duration, upload lesson notes, and attach video URLs.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div style="padding: 2rem; background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-200);">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+                        📈
+                    </div>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Live Progress Tracking</h3>
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">
+                        Every completed lesson automatically updates the student's progress in the <code>enrollment</code> table with precise percentages and completion status.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div style="padding: 2rem; background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-200);">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+                        🎥
+                    </div>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.6rem;">Interactive Video Player</h3>
+                    <p style="color: var(--gray-600); font-size: 0.9rem;">
+                        Integrated multimedia classroom with sequential navigation, YouTube and HTML5 video streaming, and detailed supplementary reading notes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Courses Section -->
+    <section style="padding: 5rem 0;">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div class="section-tag">Explore Top Curriculums</div>
+                    <h2 class="section-title">Featured Online Courses</h2>
+                </div>
+                <a href="courses.html" class="btn btn-outline">View All Courses &rarr;</a>
+            </div>
+
+            <div class="courses-grid" id="featuredCoursesGrid">
+                <!-- Loaded dynamically via JavaScript -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--gray-500);">
+                    Loading top courses...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to action banner -->
+    <section style="padding: 4rem 0; background: linear-gradient(135deg, var(--dark), var(--primary-hover)); color: var(--white); text-align: center;">
+        <div class="container" style="max-width: 800px;">
+            <h2 style="color: var(--white); font-size: 2.5rem; margin-bottom: 1rem;">Ready to Begin Your Learning Journey?</h2>
+            <p style="color: var(--gray-300); font-size: 1.1rem; margin-bottom: 2rem;">
+                Join Safwaan and hundreds of aspiring engineers on Antigravity LMS today. Free and premium certifications available.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <a href="register.html" class="btn btn-accent btn-lg">Create Free Account</a>
+                <a href="login.html" class="btn btn-secondary btn-lg">Sign In with Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        async function loadHomeData() {
+            // Load stats
+            const statsRes = await apiFetch('/api/stats');
+            if (statsRes.success && statsRes.stats) {
+                document.getElementById('statCourses').textContent = statsRes.stats.totalCourses + '+';
+                document.getElementById('statStudents').textContent = statsRes.stats.totalStudents + '+';
+                document.getElementById('statLessons').textContent = statsRes.stats.totalLessons + '+';
+                document.getElementById('statEnrollments').textContent = (statsRes.stats.totalEnrollments * 15 + 20) + '+';
+            }
+
+            // Load courses
+            const coursesRes = await apiFetch('/api/courses');
+            const grid = document.getElementById('featuredCoursesGrid');
+            if (coursesRes.success && coursesRes.courses) {
+                if (coursesRes.courses.length === 0) {
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--gray-500);">No courses found.</p>';
+                    return;
+                }
+
+                grid.innerHTML = coursesRes.courses.slice(0, 3).map(course => `
+                    <div class="course-card">
+                        <div class="course-thumb-wrap">
+                            <img src="${course.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'}" alt="${course.title}" class="course-thumb">
+                            <span class="course-category-badge">${course.category || 'General'}</span>
+                            <span class="course-duration-badge">⏱️ ${course.duration} Hours</span>
+                        </div>
+                        <div class="course-body">
+                            <div class="course-instructor">
+                                <span>👨‍🏫</span> ${course.instructor_name}
+                            </div>
+                            <h3 class="course-title">${course.title}</h3>
+                            <p class="course-desc">${course.description}</p>
+                            
+                            <div class="course-meta">
+                                <div>
+                                    <span class="course-price ${course.price == 0 ? 'free' : ''}">
+                                        ${course.price == 0 ? 'Free' : '$' + parseFloat(course.price).toFixed(2)}
+                                    </span>
+                                </div>
+                                <div class="course-lessons-count">
+                                    📖 ${course.total_lessons || 0} Lessons
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 1.25rem; display: flex; gap: 0.5rem;">
+                                <a href="course-details.html?id=${course.course_id}" class="btn btn-primary" style="flex: 1;">View Course</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadHomeData);
+    </script>
+</body>
+</html>

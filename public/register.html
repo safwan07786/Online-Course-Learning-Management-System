@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Account - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.08), transparent 50%), #f8fafc;">
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <main class="container" style="padding: 3rem 1.5rem 5rem;">
+        <div class="form-card" style="max-width: 500px;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="brand-icon" style="margin: 0 auto 1rem; width: 48px; height: 48px; font-size: 1.5rem;">🚀</div>
+                <h1 style="font-size: 1.85rem; margin-bottom: 0.35rem;">Join Antigravity LMS</h1>
+                <p style="color: var(--gray-500); font-size: 0.9rem;">
+                    Sign up as a Student to enroll in courses, or as an Instructor to create and teach!
+                </p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="regName">Full Name *</label>
+                    <input type="text" id="regName" class="form-control" placeholder="e.g. Safwaan" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regEmail">Email Address *</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="you@domain.com" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regPassword">Password *</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="regRole">Choose Your Role *</label>
+                    <select id="regRole" class="form-control" style="font-weight: 600;">
+                        <option value="student">🎓 Student (Enroll in courses & track progress)</option>
+                        <option value="instructor">👨‍🏫 Instructor (Publish courses & manage lessons)</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submitRegBtn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 1rem;">
+                    Create Free Account
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.75rem; font-size: 0.9rem; color: var(--gray-600);">
+                Already have an account? 
+                <a href="login.html" style="font-weight: 700; color: var(--primary);">Sign in here</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            const btn = document.getElementById('submitRegBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            const res = await apiFetch('/api/auth/register', {
+                method: 'POST',
+                body: { name, email, password, role }
+            });
+
+            btn.disabled = false;
+            btn.textContent = 'Create Free Account';
+
+            if (res.success && res.token && res.user) {
+                Auth.saveAuth(res.token, res.user);
+                showToast(res.message, 'success');
+
+                setTimeout(() => {
+                    if (res.user.role === 'instructor') {
+                        window.location.href = 'instructor-dashboard.html';
+                    } else {
+                        window.location.href = 'student-dashboard.html';
+                    }
+                }, 1000);
+            } else {
+                showToast(res.message || 'Registration failed.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

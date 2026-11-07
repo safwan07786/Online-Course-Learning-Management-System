@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Courses - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <div style="background: var(--dark); color: var(--white); padding: 3.5rem 0 2.5rem;">
+        <div class="container">
+            <div style="max-width: 650px;">
+                <div class="hero-badge" style="background: rgba(255,255,255,0.1); color: var(--white); border-color: rgba(255,255,255,0.2);">
+                    Explore & Learn
+                </div>
+                <h1 style="color: var(--white); font-size: 2.75rem; margin-bottom: 0.75rem;">
+                    Browse Online Courses
+                </h1>
+                <p style="color: var(--gray-400); font-size: 1.1rem;">
+                    Find comprehensive curriculums developed by industry specialists like Safwaan. Enroll instantly and track your learning progress.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+
+        <!-- Filters & Search Toolbar -->
+        <div class="filters-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search courses by title, topic, or instructor...">
+            </div>
+
+            <div class="category-pills" id="categoryPills">
+                <button class="cat-pill active" data-category="All">All Categories</button>
+                <button class="cat-pill" data-category="Web Development">Web Development</button>
+                <button class="cat-pill" data-category="Data Science">Data Science</button>
+                <button class="cat-pill" data-category="Design">Design</button>
+                <button class="cat-pill" data-category="Database Systems">Database Systems</button>
+            </div>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="courses-grid" id="coursesGrid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--gray-500);">
+                Loading courses catalog...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        let currentCategory = 'All';
+        let searchQuery = '';
+
+        async function fetchCourses() {
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--gray-500);">Loading courses...</div>';
+
+            let url = `/api/courses?category=${encodeURIComponent(currentCategory)}`;
+            if (searchQuery.trim()) {
+                url += `&search=${encodeURIComponent(searchQuery.trim())}`;
+            }
+
+            const res = await apiFetch(url);
+
+            if (!res.success || !res.courses || res.courses.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: var(--white); border-radius: var(--radius-lg); border: 1px dashed var(--gray-300);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                        <h3>No courses found</h3>
+                        <p style="color: var(--gray-500); margin-top: 0.5rem;">Try modifying your search keywords or choosing another category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentUser = Auth.getUser();
+
+            grid.innerHTML = res.courses.map(course => {
+                let actionBtn = `<a href="course-details.html?id=${course.course_id}" class="btn btn-primary" style="width: 100%;">View Syllabus & Enroll</a>`;
+
+                if (course.is_enrolled) {
+                    actionBtn = `
+                        <div style="width: 100%;">
+                            <div class="progress-meta" style="margin-bottom: 4px;">
+                                <span>Progress</span>
+                                <span>${course.user_progress}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar-fill" style="width: ${course.user_progress}%;"></div>
+                            </div>
+                            <a href="course-player.html?courseId=${course.course_id}" class="btn btn-accent" style="width: 100%; margin-top: 8px;">Resume Learning &rarr;</a>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="course-card">
+                        <div class="course-thumb-wrap">
+                            <img src="${course.thumbnail_url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'}" alt="${course.title}" class="course-thumb">
+                            <span class="course-category-badge">${course.category || 'General'}</span>
+                            <span class="course-duration-badge">⏱️ ${course.duration} Hours</span>
+                        </div>
+                        <div class="course-body">
+                            <div class="course-instructor">
+                                <span>👨‍🏫</span> ${course.instructor_name}
+                            </div>
+                            <h3 class="course-title">${course.title}</h3>
+                            <p class="course-desc">${course.description}</p>
+                            
+                            <div class="course-meta">
+                                <div>
+                                    <span class="course-price ${course.price == 0 ? 'free' : ''}">
+                                        ${course.price == 0 ? 'Free' : '$' + parseFloat(course.price).toFixed(2)}
+                                    </span>
+                                </div>
+                                <div class="course-lessons-count">
+                                    📖 ${course.total_lessons || 0} Lessons
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 1.25rem;">
+                                ${actionBtn}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Setup Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCourses();
+
+            // Search input with debounce
+            let debounceTimer;
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    searchQuery = e.target.value;
+                    fetchCourses();
+                }, 300);
+            });
+
+            // Category filter pills
+            const pills = document.querySelectorAll('.cat-pill');
+            pills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    pills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentCategory = pill.getAttribute('data-category');
+                    fetchCourses();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Classroom - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .player-top-bar {
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 72px;
+            z-index: 100;
+        }
+        .lesson-note-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+        }
+        .nav-player-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            color: var(--gray-700);
+            transition: var(--transition);
+        }
+        .nav-player-btn:hover:not(:disabled) {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+        .nav-player-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <!-- Player Sub-Header with Progress Bar -->
+    <div class="player-top-bar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <a href="student-dashboard.html" style="font-size: 0.85rem; color: var(--gray-500); display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.2rem;">
+                    &larr; Back to My Learning Dashboard
+                </a>
+                <h2 id="playerCourseTitle" style="font-size: 1.35rem; line-height: 1.2;">Course Title</h2>
+            </div>
+
+            <!-- Progress Tracker Indicator -->
+            <div style="min-width: 280px;">
+                <div class="progress-meta" style="margin-bottom: 5px;">
+                    <span style="font-size: 0.8rem; color: var(--gray-600);">Your Course Progress:</span>
+                    <span id="playerProgressPercent" style="font-weight: 800; color: var(--primary);">0%</span>
+                </div>
+                <div class="progress-container" style="margin: 0;">
+                    <div id="playerProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Learning Studio Layout -->
+    <main class="container">
+        <div class="player-layout">
+            
+            <!-- Video & Lesson Details -->
+            <div class="player-main">
+                <div class="video-wrapper" id="videoContainer">
+                    <iframe id="videoFrame" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                </div>
+
+                <div class="player-content">
+                    <div class="player-header">
+                        <div>
+                            <span id="currentLessonSeq" class="badge badge-primary" style="margin-bottom: 0.5rem;">Lesson 1</span>
+                            <h1 id="currentLessonTitle" style="font-size: 1.75rem; margin-top: 0.3rem;">Lesson Title</h1>
+                        </div>
+
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <button id="markCompleteBtn" class="btn btn-accent" onclick="markCurrentLessonComplete()">
+                                ✓ Mark Lesson Completed
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Content Notes -->
+                    <div>
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--gray-800);">Learning Notes & Material</h3>
+                        <div class="lesson-note-box" id="currentLessonContent">
+                            Content will load here...
+                        </div>
+                    </div>
+
+                    <!-- Navigation controls -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--gray-200); padding-top: 1.5rem;">
+                        <button id="prevLessonBtn" class="nav-player-btn" onclick="goToPrevLesson()">
+                            &larr; Previous Lesson
+                        </button>
+                        <button id="nextLessonBtn" class="nav-player-btn" onclick="goToNextLesson()">
+                            Next Lesson &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lessons Sidebar Playlist -->
+            <aside class="player-sidebar">
+                <div class="sidebar-header">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Course Syllabus</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-500);"><span id="lessonCountBadge">0</span> lessons in this course</p>
+                </div>
+                <ul class="lessons-list" id="sidebarLessonsList">
+                    <!-- Populated dynamically -->
+                </ul>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+
+        let courseData = null;
+        let lessonsList = [];
+        let activeIndex = 0;
+        let currentProgress = 0;
+        let completedLessonsMap = new Set();
+
+        function normalizeVideoUrl(rawUrl) {
+            if (!rawUrl) return 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+            if (rawUrl.includes('youtube.com/embed/')) return rawUrl;
+
+            // Handle watch?v=...
+            const vMatch = rawUrl.match(/[?&]v=([^&#]+)/);
+            if (vMatch && vMatch[1]) {
+                return `https://www.youtube.com/embed/${vMatch[1]}`;
+            }
+
+            // Handle youtu.be/...
+            const shortMatch = rawUrl.match(/youtu\.be\/([^?&#]+)/);
+            if (shortMatch && shortMatch[1]) {
+                return `https://www.youtube.com/embed/${shortMatch[1]}`;
+            }
+
+            return rawUrl;
+        }
+
+        async function initPlayer() {
+            if (!requireAuth()) return;
+
+            if (!courseId) {
+                window.location.href = 'student-dashboard.html';
+                return;
+            }
+
+            const res = await apiFetch(`/api/courses/${courseId}`);
+            if (!res.success || !res.course) {
+                showToast('Failed to load course details.', 'error');
+                setTimeout(() => window.location.href = 'student-dashboard.html', 1500);
+                return;
+            }
+
+            courseData = res.course;
+            lessonsList = res.lessons || [];
+
+            if (lessonsList.length === 0) {
+                showToast('No lessons available in this course.', 'warning');
+            }
+
+            document.getElementById('playerCourseTitle').textContent = courseData.title;
+            document.getElementById('lessonCountBadge').textContent = lessonsList.length;
+
+            if (res.userEnrollment) {
+                currentProgress = res.userEnrollment.progress || 0;
+                updateProgressUI(currentProgress);
+            }
+
+            renderSidebarLessons();
+            selectLesson(0);
+        }
+
+        function updateProgressUI(prog) {
+            currentProgress = Math.min(100, Math.max(0, prog));
+            document.getElementById('playerProgressPercent').textContent = `${currentProgress}%`;
+            document.getElementById('playerProgressBar').style.width = `${currentProgress}%`;
+
+            if (currentProgress >= 100) {
+                document.getElementById('playerProgressPercent').innerHTML = '100% <span>🎉 Completed!</span>';
+            }
+        }
+
+        function renderSidebarLessons() {
+            const listEl = document.getElementById('sidebarLessonsList');
+            listEl.innerHTML = lessonsList.map((lesson, idx) => {
+                const isCompleted = completedLessonsMap.has(lesson.lesson_id);
+                return `
+                    <li class="lesson-item ${idx === activeIndex ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+                        id="lessonTab-${idx}" 
+                        onclick="selectLesson(${idx})">
+                        <div class="lesson-check">${isCompleted ? '✓' : ''}</div>
+                        <div class="lesson-info">
+                            <div class="lesson-seq">Lesson ${lesson.sequence_no || (idx + 1)}</div>
+                            <div class="lesson-title-text">${lesson.lesson_title}</div>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function selectLesson(index) {
+            if (index < 0 || index >= lessonsList.length) return;
+
+            activeIndex = index;
+            const lesson = lessonsList[index];
+
+            document.getElementById('currentLessonSeq').textContent = `Lesson ${lesson.sequence_no || (index + 1)} of ${lessonsList.length}`;
+            document.getElementById('currentLessonTitle').textContent = lesson.lesson_title;
+            document.getElementById('currentLessonContent').innerHTML = lesson.content ? lesson.content.replace(/\n/g, '<br>') : '<em>No written notes for this lesson.</em>';
+
+            // Set video
+            const embedUrl = normalizeVideoUrl(lesson.video_url);
+            document.getElementById('videoFrame').src = embedUrl;
+
+            // Update active states in sidebar
+            document.querySelectorAll('.lesson-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            // Update navigation button states
+            document.getElementById('prevLessonBtn').disabled = (index === 0);
+            document.getElementById('nextLessonBtn').disabled = (index === lessonsList.length - 1);
+
+            // Update mark complete button text
+            const markBtn = document.getElementById('markCompleteBtn');
+            if (completedLessonsMap.has(lesson.lesson_id)) {
+                markBtn.innerHTML = '✓ Completed';
+                markBtn.classList.remove('btn-accent');
+                markBtn.classList.add('btn-secondary');
+            } else {
+                markBtn.innerHTML = '✓ Mark Lesson Completed';
+                markBtn.classList.remove('btn-secondary');
+                markBtn.classList.add('btn-accent');
+            }
+        }
+
+        async function markCurrentLessonComplete() {
+            const lesson = lessonsList[activeIndex];
+            if (!lesson) return;
+
+            completedLessonsMap.add(lesson.lesson_id);
+
+            // Recalculate progress %
+            const calculatedProgress = Math.round((completedLessonsMap.size / lessonsList.length) * 100);
+            const newProgress = Math.max(currentProgress, calculatedProgress);
+
+            const res = await apiFetch(`/api/enrollments/course/${courseId}/progress`, {
+                method: 'PUT',
+                body: { progress: newProgress }
+            });
+
+            if (res.success) {
+                updateProgressUI(newProgress);
+                renderSidebarLessons();
+                selectLesson(activeIndex);
+                showToast(`Lesson marked completed! Progress updated to ${newProgress}%.`, 'success');
+
+                if (newProgress >= 100) {
+                    showToast('🎉 Congratulations Safwaan! You have completed this entire course!', 'success');
+                }
+            } else {
+                showToast('Failed to sync progress with database.', 'error');
+            }
+        }
+
+        function goToPrevLesson() {
+            if (activeIndex > 0) {
+                selectLesson(activeIndex - 1);
+            }
+        }
+
+        function goToNextLesson() {
+            if (activeIndex < lessonsList.length - 1) {
+                selectLesson(activeIndex + 1);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPlayer);
+    </script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Course Lessons - Antigravity LMS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar" id="mainNav"></header>
+
+    <main class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <a href="instructor-dashboard.html" style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--gray-600); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    &larr; Back to Courses
+                </a>
+                <h1 id="courseTitleHeader" style="font-size: 1.85rem;">Managing Lessons: Course Title</h1>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="openAddLessonModal()">+ Add New Lesson</button>
+            </div>
+        </div>
+
+        <!-- Lessons Table / Cards -->
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Seq #</th>
+                        <th>Lesson Title</th>
+                        <th>Video Resource</th>
+                        <th>Content Preview</th>
+                        <th style="text-align: right; width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="lessonsTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--gray-500);">
+                            Loading lessons...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- Modal for Adding / Editing Lesson -->
+    <div class="modal-overlay" id="lessonModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle" style="font-size: 1.25rem;">Add New Lesson</h3>
+                <button type="button" onclick="closeLessonModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500);">&times;</button>
+            </div>
+            <form id="lessonForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editLessonId" value="">
+
+                    <div class="form-group">
+                        <label class="form-label" for="lessonTitle">Lesson Title *</label>
+                        <input type="text" id="lessonTitle" class="form-control" placeholder="e.g. Setting up Express Server & MySQL Connection" required maxlength="150">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="lessonSeq">Sequence Number *</label>
+                            <input type="number" id="lessonSeq" class="form-control" placeholder="1" min="1" required value="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lessonVideo">Video URL (YouTube embed or MP4)</label>
+                            <input type="url" id="lessonVideo" class="form-control" placeholder="https://www.youtube.com/watch?v=..." value="https://www.youtube.com/embed/dQw4w9WgXcQ">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="lessonContent">Lesson Learning Notes & Instructions</label>
+                        <textarea id="lessonContent" class="form-control" placeholder="Detailed textual explanation, code snippets, or reference links for students..." rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeLessonModal()">Cancel</button>
+                    <button type="submit" id="saveLessonBtn" class="btn btn-primary">Save Lesson</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="mainFooter"></footer>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+        let currentLessons = [];
+
+        async function loadCourseLessons() {
+            if (!requireInstructor()) return;
+
+            if (!courseId) {
+                window.location.href = 'instructor-dashboard.html';
+                return;
+            }
+
+            // Get Course Name
+            const courseRes = await apiFetch(`/api/courses/${courseId}`);
+            if (courseRes.success && courseRes.course) {
+                document.getElementById('courseTitleHeader').textContent = `Manage Lessons: ${courseRes.course.title}`;
+            }
+
+            const res = await apiFetch(`/api/courses/${courseId}/lessons`);
+            const tbody = document.getElementById('lessonsTableBody');
+
+            if (!res.success || !res.lessons || res.lessons.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 4rem;">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎬</div>
+                            <h4>No lessons added to this course yet</h4>
+                            <p style="color: var(--gray-500); margin: 0.5rem 0 1.25rem;">Start building your course syllabus with video lectures and study guides.</p>
+                            <button class="btn btn-primary btn-sm" onclick="openAddLessonModal()">+ Add Your First Lesson</button>
+                        </td>
+                    </tr>
+                `;
+                currentLessons = [];
+                return;
+            }
+
+            currentLessons = res.lessons;
+
+            tbody.innerHTML = res.lessons.map(l => `
+                <tr>
+                    <td>
+                        <span class="badge badge-primary" style="font-size: 0.85rem;">#${l.sequence_no}</span>
+                    </td>
+                    <td>
+                        <strong style="color: var(--gray-900);">${l.lesson_title}</strong>
+                    </td>
+                    <td>
+                        <a href="${l.video_url}" target="_blank" style="display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.85rem;">
+                            🎥 View Link &nearr;
+                        </a>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.85rem; color: var(--gray-600); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${l.content || '<em>No notes</em>'}
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: inline-flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="openEditLessonModal(${l.lesson_id})">✏️ Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteLesson(${l.lesson_id})">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddLessonModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Lesson';
+            document.getElementById('editLessonId').value = '';
+            document.getElementById('lessonTitle').value = '';
+            document.getElementById('lessonSeq').value = currentLessons.length + 1;
+            document.getElementById('lessonVideo').value = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+            document.getElementById('lessonContent').value = '';
+            document.getElementById('lessonModal').classList.add('active');
+        }
+
+        function openEditLessonModal(lessonId) {
+            const lesson = currentLessons.find(l => l.lesson_id === lessonId);
+            if (!lesson) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Lesson';
+            document.getElementById('editLessonId').value = lesson.lesson_id;
+            document.getElementById('lessonTitle').value = lesson.lesson_title;
+            document.getElementById('lessonSeq').value = lesson.sequence_no;
+            document.getElementById('lessonVideo').value = lesson.video_url || '';
+            document.getElementById('lessonContent').value = lesson.content || '';
+            document.getElementById('lessonModal').classList.add('active');
+        }
+
+        function closeLessonModal() {
+            document.getElementById('lessonModal').classList.remove('active');
+        }
+
+        document.getElementById('lessonForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const editId = document.getElementById('editLessonId').value;
+            const lesson_title = document.getElementById('lessonTitle').value.trim();
+            const sequence_no = parseInt(document.getElementById('lessonSeq').value);
+            const video_url = document.getElementById('lessonVideo').value.trim();
+            const content = document.getElementById('lessonContent').value.trim();
+
+            if (!lesson_title) {
+                showToast('Lesson title is required.', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveLessonBtn');
+            saveBtn.disabled = true;
+
+            let res;
+            if (editId) {
+                // Update
+                res = await apiFetch(`/api/lessons/${editId}`, {
+                    method: 'PUT',
+                    body: { lesson_title, sequence_no, video_url, content }
+                });
+            } else {
+                // Add new
+                res = await apiFetch(`/api/courses/${courseId}/lessons`, {
+                    method: 'POST',
+                    body: { lesson_title, sequence_no, video_url, content }
+                });
+            }
+
+            saveBtn.disabled = false;
+
+            if (res.success) {
+                showToast(res.message, 'success');
+                closeLessonModal();
+                loadCourseLessons();
+            } else {
+                showToast(res.message || 'Operation failed.', 'error');
+            }
+        });
+
+        async function deleteLesson(lessonId) {
+            if (!confirm('Are you sure you want to delete this lesson?')) return;
+
+            const res = await apiFetch(`/api/lessons/${lessonId}`, {
+                method: 'DELETE'
+            });
+
+            if (res.success) {
+                showToast(res.message, 'success');
+                loadCourseLessons();
+            } else {
+                showToast(res.message || 'Failed to delete lesson.', 'error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCourseLessons);
+    </script>
+</body>
+</html>
